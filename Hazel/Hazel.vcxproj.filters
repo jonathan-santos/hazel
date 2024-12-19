@@ -29,5 +29,8 @@
     <ClCompile Include="src\Hazel\Application.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Hazel\Entrypoint.h">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
