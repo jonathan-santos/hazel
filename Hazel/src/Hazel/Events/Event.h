@@ -1,5 +1,7 @@
 #pragma once
 
+#include "hzpch.h"
+
 #include "Hazel/Core.h"
 
 namespace Hazel {
@@ -60,7 +62,7 @@ namespace Hazel {
 		{
 			if (m_Event.GetEventType() == T::GetStaticType())
 			{
-				m_Event.mHandled = func(*(T*)&m_Event);
+				m_Event.m_Handled = func(*(T*)&m_Event);
 				return true;
 			}
 			return false;
@@ -69,10 +71,6 @@ namespace Hazel {
 		Event& m_Event;
 	};
 
-	//inline std::ostream& operator<<(std::ostream& os, const Event& e)
-	//{
-	//	return os << e.ToString();
-	//}
 	inline std::string format_as(const Event& e)
 	{
 		return e.ToString();
