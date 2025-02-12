@@ -44,7 +44,8 @@ project "Hazel"
 	links
 	{
 		"GLFW",
-		"opengl32.lib"
+		"opengl32.lib",
+		"dwmapi.lib"
 	}
 
 	buildoptions
@@ -54,7 +55,7 @@ project "Hazel"
 
 	filter "system:windows"
 		cppdialect "C++17"
-		staticruntime "On"
+		staticruntime "Off"
 		systemversion "latest"
 
 		defines
