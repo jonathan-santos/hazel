@@ -1,12 +1,6 @@
 #include "hzpch.h"
 #include "Application.h"
 
-#include "Hazel/Log.h"
-#include "Hazel/Renderer/Renderer.h"
-#include "Hazel/Renderer/RenderCommand.h"
-
-#include "Input.h"
-
 namespace Hazel {
 
 #define BIND_EVENT_FN(x) std::bind(&Application::x, this, std::placeholders::_1)

@@ -1,16 +1,12 @@
 #include <Hazel.h>
-#include <Hazel/Renderer/Renderer.h>
-#include <Hazel/Renderer/RenderCommand.h>
-
 #include <memory>
 #include "imgui/imgui.h"
-
 
 class ExampleLayer : public Hazel::Layer
 {
 public:
 	ExampleLayer()
-		: Layer("Example")
+		: Layer("Example"), m_Camera(-1.6f, 1.6f, -0.9f, 0.9f)
 	{
 		m_TriangleVA.reset(Hazel::VertexArray::Create());
 
@@ -40,6 +36,8 @@ public:
 			layout(location = 0) in vec3 a_Position;
 			layout(location = 1) in vec4 a_Color;
 
+			uniform mat4 u_ViewProjection;
+
 			out vec3 v_Position;
 			out vec4 v_Color;
 
@@ -47,7 +45,7 @@ public:
 			{
 				v_Position = a_Position;
 				v_Color = a_Color;
-				gl_Position = vec4(a_Position, 1.0);
+				gl_Position = u_ViewProjection * vec4(a_Position, 1.0);
 			}
 		)";
 
@@ -94,12 +92,14 @@ public:
 
 			layout(location = 0) in vec3 a_Position;
 
+			uniform mat4 u_ViewProjection;
+
 			out vec3 v_Position;
 
 			void main()
 			{
 				v_Position = a_Position;
-				gl_Position = vec4(a_Position, 1.0);
+				gl_Position = u_ViewProjection * vec4(a_Position, 1.0);
 			}
 		)";
 
@@ -121,30 +121,37 @@ public:
 
 	void OnUpdate() override
 	{
+		if (Hazel::Input::IsKeyPressed(HZ_KEY_A))
+			m_CameraPosition.x += m_CameraSpeed;
+		else if (Hazel::Input::IsKeyPressed(HZ_KEY_D))
+			m_CameraPosition.x -= m_CameraSpeed;
+
+		if (Hazel::Input::IsKeyPressed(HZ_KEY_W))
+			m_CameraPosition.y -= m_CameraSpeed;
+		else if (Hazel::Input::IsKeyPressed(HZ_KEY_S))
+			m_CameraPosition.y += m_CameraSpeed;
+
+		if (Hazel::Input::IsKeyPressed(HZ_KEY_E))
+			m_CameraRotation += m_CameraRotationSpeed;
+		else if (Hazel::Input::IsKeyPressed(HZ_KEY_Q))
+			m_CameraRotation -= m_CameraRotationSpeed;
 
 		Hazel::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
 		Hazel::RenderCommand::ClearColor();
 
-		Hazel::Renderer::BeginScene();
+		m_Camera.SetPosition(m_CameraPosition);
+		m_Camera.SetRotation(m_CameraRotation);
 
-		m_BlueShader->Bind();
-		Hazel::Renderer::Submit(m_SquareVA);
+		Hazel::Renderer::BeginScene(m_Camera);
 
-		m_Shader->Bind();
-		Hazel::Renderer::Submit(m_TriangleVA);
+		Hazel::Renderer::Submit(m_BlueShader, m_SquareVA);
+		Hazel::Renderer::Submit(m_Shader, m_TriangleVA);
 
 		Hazel::Renderer::EndScene();
 	}
 
-	void OnEvent(Hazel::Event& event) override
-	{ }
-
 	void OnImGuiRender() override
-	{
-		ImGui::Begin("Test");
-		ImGui::Text("Hello There");
-		ImGui::End();
-	}
+	{ }
 private:
 	std::shared_ptr<Hazel::Shader> m_Shader;
 	std::shared_ptr<Hazel::VertexArray> m_TriangleVA;
@@ -152,6 +159,11 @@ private:
 	std::shared_ptr<Hazel::Shader> m_BlueShader;
 	std::shared_ptr<Hazel::VertexArray> m_SquareVA;
 
+	Hazel::OrthographicCamera m_Camera;
+	glm::vec3 m_CameraPosition = { 0.0f, 0.0f, 0.0f };
+	float m_CameraRotation = 0.0f;
+	float m_CameraSpeed = 0.01f;
+	float m_CameraRotationSpeed = 0.5f;
 };
 
 class Sandbox : public Hazel::Application
