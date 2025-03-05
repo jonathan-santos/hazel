@@ -12,6 +12,8 @@
 #include "Hazel/Renderer/VertexArray.h"
 #include "Hazel/Renderer/Buffer.h"
 
+#include "Hazel/Core/Timestep.h"
+
 namespace Hazel {
 
 	class HAZEL_API Application
@@ -31,7 +33,7 @@ namespace Hazel {
 		inline Window& GetWindow() { return *m_Window; }
 	private:
 		bool OnWindowClose(WindowCloseEvent& e);
-
+	private:
 		std::unique_ptr<Window> m_Window;
 		ImGuiLayer* m_ImGuiLayer;
 		bool m_Running = true;
@@ -42,6 +44,7 @@ namespace Hazel {
 
 		std::shared_ptr<Shader> m_BlueShader;
 		std::shared_ptr<VertexArray> m_SquareVA;
+		float m_LastFrameTime = 0.0f;
 	private:
 		static Application* s_Instance;
 	};
